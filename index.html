@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kindle Sudoku Compatibility Test</title>
+  <style>
+    :root {
+      --cell: min(9.5vw, 52px);
+      --border: #000;
+      --bg: #fff;
+      --fg: #000;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 16px 10px 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      text-align: center;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0 0 8px;
+    }
+
+    .intro {
+      font-size: 15px;
+      line-height: 1.35;
+      margin: 0 auto 14px;
+      max-width: 520px;
+    }
+
+    #status {
+      border: 2px solid #000;
+      padding: 9px 10px;
+      margin: 0 auto 14px;
+      max-width: 520px;
+      font-size: 14px;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .ok { font-weight: bold; }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(9, var(--cell));
+      width: calc(var(--cell) * 9 + 4px);
+      margin: 0 auto 16px;
+      border: 2px solid var(--border);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .cell {
+      width: var(--cell);
+      height: var(--cell);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #000;
+      font-size: 22px;
+      line-height: 1;
+      padding: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      border-radius: 0;
+    }
+
+    .cell:nth-child(3n) { border-right-width: 2px; }
+    .cell:nth-child(9n) { border-right-width: 1px; }
+
+    .cell.row3,
+    .cell.row6 { border-bottom-width: 2px; }
+
+    .cell.selected {
+      outline: 4px solid #000;
+      outline-offset: -5px;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(48px, 1fr));
+      gap: 8px;
+      max-width: 520px;
+      margin: 0 auto 12px;
+    }
+
+    .key {
+      min-height: 48px;
+      border: 2px solid #000;
+      background: #fff;
+      color: #000;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 0;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 8px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .action {
+      min-height: 48px;
+      border: 2px solid #000;
+      background: #fff;
+      color: #000;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 0;
+    }
+
+    .small {
+      margin: 14px auto 0;
+      max-width: 520px;
+      font-size: 13px;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    @media (max-width: 380px) {
+      body { padding-left: 5px; padding-right: 5px; }
+      h1 { font-size: 19px; }
+      .intro { font-size: 14px; }
+      .cell { font-size: 19px; }
+      .keypad { gap: 5px; }
+      .key { min-height: 44px; font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Kindle Sudoku — Compatibility Test</h1>
+
+  <p class="intro">
+    Toca una casilla y después un número. Cierra el navegador, vuelve a abrir esta página
+    y comprueba si los números siguen guardados.
+  </p>
+
+  <div id="status">
+    JavaScript: <span id="jsStatus">comprobando…</span><br>
+    localStorage: <span id="storageStatus">comprobando…</span><br>
+    Último guardado: <span id="saveStatus">—</span>
+  </div>
+
+  <div id="board" class="board" aria-label="Tablero de prueba 9 por 9"></div>
+
+  <div id="keypad" class="keypad" aria-label="Teclado numérico">
+    <button class="key" type="button" data-value="1">1</button>
+    <button class="key" type="button" data-value="2">2</button>
+    <button class="key" type="button" data-value="3">3</button>
+    <button class="key" type="button" data-value="4">4</button>
+    <button class="key" type="button" data-value="5">5</button>
+    <button class="key" type="button" data-value="6">6</button>
+    <button class="key" type="button" data-value="7">7</button>
+    <button class="key" type="button" data-value="8">8</button>
+    <button class="key" type="button" data-value="9">9</button>
+    <button class="key" type="button" data-value="">⌫</button>
+  </div>
+
+  <div class="actions">
+    <button id="saveBtn" class="action" type="button">Guardar</button>
+    <button id="clearBtn" class="action" type="button">Borrar todo</button>
+  </div>
+
+  <p class="small">
+    Prueba recomendada: escribe varios números, pulsa <strong>Guardar</strong>, cierra el navegador
+    del Kindle por completo y vuelve a entrar desde el marcador. Si los números reaparecen,
+    el almacenamiento local funciona correctamente.
+  </p>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "kindleSudokuCompatibilityTestV1";
+      var board = document.getElementById("board");
+      var jsStatus = document.getElementById("jsStatus");
+      var storageStatus = document.getElementById("storageStatus");
+      var saveStatus = document.getElementById("saveStatus");
+      var selectedIndex = 0;
+      var cells = [];
+      var storageAvailable = false;
+
+      jsStatus.textContent = "OK";
+      jsStatus.className = "ok";
+
+      function testStorage() {
+        try {
+          var key = "__kindle_sudoku_test__";
+          localStorage.setItem(key, "1");
+          var ok = localStorage.getItem(key) === "1";
+          localStorage.removeItem(key);
+          return ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      storageAvailable = testStorage();
+      storageStatus.textContent = storageAvailable ? "OK" : "NO DISPONIBLE";
+      storageStatus.className = storageAvailable ? "ok" : "";
+
+      function makeBoard() {
+        for (var i = 0; i < 81; i++) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cell";
+          if (Math.floor(i / 9) === 2) btn.className += " row3";
+          if (Math.floor(i / 9) === 5) btn.className += " row6";
+          btn.setAttribute("data-index", String(i));
+          btn.setAttribute("aria-label", "Casilla " + (i + 1));
+          btn.addEventListener("click", selectCell);
+          board.appendChild(btn);
+          cells.push(btn);
+        }
+      }
+
+      function selectCell(e) {
+        selectedIndex = parseInt(e.currentTarget.getAttribute("data-index"), 10);
+        updateSelection();
+      }
+
+      function updateSelection() {
+        for (var i = 0; i < cells.length; i++) {
+          if (i === selectedIndex) {
+            if (cells[i].className.indexOf("selected") === -1) {
+              cells[i].className += " selected";
+            }
+          } else {
+            cells[i].className = cells[i].className.replace(/\s*selected/g, "");
+          }
+        }
+      }
+
+      function setValue(value) {
+        cells[selectedIndex].textContent = value;
+        autoSave();
+      }
+
+      function getState() {
+        var values = [];
+        for (var i = 0; i < cells.length; i++) {
+          values.push(cells[i].textContent || "");
+        }
+        return values;
+      }
+
+      function applyState(values) {
+        if (!values || !values.length) return;
+        for (var i = 0; i < cells.length && i < values.length; i++) {
+          cells[i].textContent = values[i] || "";
+        }
+      }
+
+      function saveState(manual) {
+        if (!storageAvailable) {
+          saveStatus.textContent = "No se puede guardar";
+          return;
+        }
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(getState()));
+          saveStatus.textContent = manual ? "guardado manualmente" : "guardado automático";
+        } catch (e) {
+          saveStatus.textContent = "error al guardar";
+        }
+      }
+
+      function autoSave() {
+        saveState(false);
+      }
+
+      function loadState() {
+        if (!storageAvailable) return;
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return;
+          var values = JSON.parse(raw);
+          applyState(values);
+          saveStatus.textContent = "partida recuperada";
+        } catch (e) {
+          saveStatus.textContent = "error al recuperar";
+        }
+      }
+
+      var keys = document.getElementsByClassName("key");
+      for (var i = 0; i < keys.length; i++) {
+        keys[i].addEventListener("click", function (e) {
+          setValue(e.currentTarget.getAttribute("data-value"));
+        });
+      }
+
+      document.getElementById("saveBtn").addEventListener("click", function () {
+        saveState(true);
+      });
+
+      document.getElementById("clearBtn").addEventListener("click", function () {
+        for (var i = 0; i < cells.length; i++) {
+          cells[i].textContent = "";
+        }
+        saveState(true);
+      });
+
+      makeBoard();
+      updateSelection();
+      loadState();
+    })();
+  </script>
+</body>
+</html>
