@@ -3,15 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Kindle Sudoku v4</title>
+<title>Kindle Sudoku</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
 body{padding:4px 7px 6px;text-align:center}
 #app{width:100%;max-width:620px;margin:0 auto}
-#top{height:30px;line-height:30px;text-align:left;white-space:nowrap}
-#title{font-size:20px;font-weight:bold}
-#status{float:right;font-size:14px;font-weight:bold}
+#top{width:82%;height:34px;line-height:34px;margin:0 auto 4px;white-space:nowrap;text-align:center}
+#title{float:left;font-size:20px;font-weight:bold}
+.topbtn{height:30px;margin:1px 1px;padding:0 6px;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:13px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;-webkit-appearance:none;vertical-align:middle}
+#prevBtn,#nextBtn{width:34px;padding:0}
+#puzzleLabel{display:inline-block;min-width:34px;font-size:13px;font-weight:bold;vertical-align:middle}
+#difficultyBtn{min-width:54px}
+#solveBtn{min-width:64px}
 #board{border-collapse:collapse;table-layout:fixed;width:82%;border:3px solid #000;margin:0 auto 5px}
 #board td{border:1px solid #777;padding:0;width:11.11%;position:relative}
 #board tr:nth-child(3) td,#board tr:nth-child(6) td{border-bottom:3px solid #000}
@@ -24,156 +28,212 @@ body{padding:4px 7px 6px;text-align:center}
 .value{position:absolute;left:0;top:0;width:100%;height:100%;display:block;text-align:center;font-size:24px}
 .given .value{font-weight:bold}
 .notes{position:absolute;left:2px;right:2px;top:2px;bottom:2px;font-size:10px;line-height:1.05;text-align:left;white-space:normal;overflow:hidden;letter-spacing:.5px}
-#keys,#actions{width:82%;white-space:nowrap;margin-left:auto;margin-right:auto}
-.key{display:inline-block;width:9.7%;height:40px;margin:0 .35%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:18px;font-weight:bold;-webkit-appearance:none}
-.action{display:inline-block;height:39px;margin:3px .4% 0;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:14px;font-weight:bold;-webkit-appearance:none}
-#notesBtn{width:28%}#eraseBtn{width:28%}#newBtn{width:39%}
-#message{width:82%;height:20px;line-height:20px;margin:0 auto;font-size:12px;text-align:left;overflow:hidden;white-space:nowrap}
-.on{background:#000!important;color:#fff!important}
+.solution{position:absolute;right:3px;bottom:2px;font-size:11px;line-height:11px;font-weight:bold}
+.wrong .value{text-decoration:underline}
+#keys{width:82%;white-space:nowrap;margin:0 auto;text-align:center}
+.key{display:inline-block;width:9.2%;height:40px;margin:0 .2%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:18px;font-weight:bold;-webkit-appearance:none}
+#notesKey.on{background:#000!important;color:#fff!important}
 </style>
 </head>
 <body>
 <div id="app">
-<div id="top"><span id="title">SUDOKU</span><span id="status">v5</span></div>
+<div id="top">
+ <span id="title">SUDOKU</span>
+ <button id="prevBtn" class="topbtn" type="button">&#9664;</button>
+ <span id="puzzleLabel">11</span>
+ <button id="nextBtn" class="topbtn" type="button">&#9654;</button>
+ <button id="difficultyBtn" class="topbtn" type="button">Fácil</button>
+ <button id="solveBtn" class="topbtn" type="button">Resolver</button>
+</div>
 <table id="board"><tbody></tbody></table>
 <div id="keys">
-<button class="key" data-v="1">1</button><button class="key" data-v="2">2</button><button class="key" data-v="3">3</button><button class="key" data-v="4">4</button><button class="key" data-v="5">5</button><button class="key" data-v="6">6</button><button class="key" data-v="7">7</button><button class="key" data-v="8">8</button><button class="key" data-v="9">9</button>
+ <button id="notesKey" class="key" type="button">N</button><button class="key numberKey" data-v="1" type="button">1</button><button class="key numberKey" data-v="2" type="button">2</button><button class="key numberKey" data-v="3" type="button">3</button><button class="key numberKey" data-v="4" type="button">4</button><button class="key numberKey" data-v="5" type="button">5</button><button class="key numberKey" data-v="6" type="button">6</button><button class="key numberKey" data-v="7" type="button">7</button><button class="key numberKey" data-v="8" type="button">8</button><button class="key numberKey" data-v="9" type="button">9</button>
 </div>
-<div id="actions">
-<button id="notesBtn" class="action">Notas: NO</button><button id="eraseBtn" class="action">Borrar</button><button id="newBtn" class="action">Nueva partida</button>
-</div>
-<div id="message">Selecciona una casilla.</div>
 </div>
 <script>
 (function(){
-var KEY="kindleSudokuV4State";
-var puzzle="530070000600195000098000060800060003400803001700020006060000280000419005000080079";
-var tb=document.getElementById("board").getElementsByTagName("tbody")[0];
-var board=document.getElementById("board");
-var cells=[],selected=-1,notesMode=false;
-var message=document.getElementById("message"),notesBtn=document.getElementById("notesBtn");
-
+/* Kindle Sudoku v7: 81 puzzles visibles por dificultad, 11-99 sin ceros */
+var SAVE_PREFIX="kindleSudokuState_";
+var baseSets={
+ 1:{name:"Fácil",puzzle:"530070000600195000098000060800060003400803001700020006060000280000419005000080079",solution:"534678912672195348198342567859761423426853791713924856961537284287419635345286179"},
+ 2:{name:"Medio",puzzle:"000260701680070090190004500820100040004602900050003028009300074040050036703018000",solution:"435269781682571493197834562826195347374682915951743628519326874248957136763418259"},
+ 3:{name:"Difícil",puzzle:"300000000005009000200504000020000700160000058704310600000890100000067080000005437",solution:"398176245415289376276534891823945716169762358754318629647893152531427984982651437"}
+};
+function remap(s,shift){
+ var out="",i,n;
+ for(i=0;i<s.length;i++){
+  if(s.charAt(i)==="0")out+="0";
+  else{n=parseInt(s.charAt(i),10);out+=String(((n-1+shift)%9)+1);}
+ }
+ return out;
+}
+function visibleNumbers(){
+ var a=[],t,u;
+ for(t=1;t<=9;t++)for(u=1;u<=9;u++)a.push(t*10+u);
+ return a;
+}
+function transformGrid(s,variant){
+ var digitShift=variant%9;
+ var bandShift=Math.floor(variant/9)%3;
+ var stackShift=Math.floor(variant/27)%3;
+ var out="",r,c,srcR,srcC,band,stack,pos,ch,n;
+ for(r=0;r<9;r++){
+  band=Math.floor(r/3);
+  srcR=((band+bandShift)%3)*3+(r%3);
+  for(c=0;c<9;c++){
+   stack=Math.floor(c/3);
+   srcC=((stack+stackShift)%3)*3+(c%3);
+   pos=srcR*9+srcC;
+   ch=s.charAt(pos);
+   if(ch==="0")out+="0";
+   else{
+    n=parseInt(ch,10);
+    out+=String(((n-1+digitShift)%9)+1);
+   }
+  }
+ }
+ return out;
+}
+var puzzleSets={1:[],2:[],3:[]},lv,j,nums=visibleNumbers(),vis;
+for(lv=1;lv<=3;lv++){
+ for(j=0;j<nums.length;j++){
+  vis=nums[j];
+  puzzleSets[lv].push({
+   id:lv*100+vis,
+   visible:vis,
+   difficulty:baseSets[lv].name,
+   puzzle:transformGrid(baseSets[lv].puzzle,j),
+   solution:transformGrid(baseSets[lv].solution,j)
+  });
+ }
+}
+var level=1,index=0,selected=-1,notesMode=false,solveArmed=false,showingSolution=false,solveTimer=null;
+var board=document.getElementById("board"),tb=board.getElementsByTagName("tbody")[0],cells=[];
+var notesKey=document.getElementById("notesKey"),solveBtn=document.getElementById("solveBtn");
+function data(){
+ if(level===4){
+  var real=parseInt(document.getElementById("difficultyBtn").getAttribute("data-real")||"1",10);
+  return puzzleSets[real][index];
+ }
+ return puzzleSets[level][index];
+}
 function makeSquare(){
- var w=board.offsetWidth, h=Math.floor(w/9), rows=board.getElementsByTagName("tr"),r,c,b,v,n;
+ var w=board.offsetWidth,h=Math.floor(w/9),rows=board.getElementsByTagName("tr"),r,c,b,v,n,s;
  for(r=0;r<rows.length;r++){
   rows[r].style.height=h+"px";
   for(c=0;c<9;c++){
-   rows[r].cells[c].style.height=h+"px";
-   b=rows[r].cells[c].getElementsByTagName("button")[0];
-   b.style.height=h+"px";
-   v=b.getElementsByClassName("value")[0];
-   n=b.getElementsByClassName("notes")[0];
+   rows[r].cells[c].style.height=h+"px";b=rows[r].cells[c].getElementsByTagName("button")[0];b.style.height=h+"px";
+   v=b.getElementsByClassName("value")[0];n=b.getElementsByClassName("notes")[0];s=b.getElementsByClassName("solution")[0];
    if(v){v.style.lineHeight=h+"px";v.style.fontSize=Math.max(20,Math.floor(h*.38))+"px";}
-   if(n){n.style.fontSize=Math.max(8,Math.floor(h*.15))+"px";}
+   if(n)n.style.fontSize=Math.max(8,Math.floor(h*.15))+"px";
+   if(s)s.style.fontSize=Math.max(9,Math.floor(h*.16))+"px";
   }
  }
 }
-function isPeer(a,b){
- var ar=Math.floor(a/9),ac=a%9,br=Math.floor(b/9),bc=b%9;
- return ar==br||ac==bc||(Math.floor(ar/3)==Math.floor(br/3)&&Math.floor(ac/3)==Math.floor(bc/3));
-}
+function isPeer(a,b){var ar=Math.floor(a/9),ac=a%9,br=Math.floor(b/9),bc=b%9;return ar==br||ac==bc||(Math.floor(ar/3)==Math.floor(br/3)&&Math.floor(ac/3)==Math.floor(bc/3));}
 function getValue(i){return cells[i].getAttribute("data-value")||""}
 function getNotes(i){return cells[i].getAttribute("data-notes")||""}
 function renderCell(i){
- var b=cells[i],val=getValue(i),nts=getNotes(i),v=b.getElementsByClassName("value")[0],n=b.getElementsByClassName("notes")[0],s="",j;
- v.innerHTML=val;
- if(!val&&nts){
-  for(j=1;j<=9;j++){s+=(nts.indexOf(String(j))>=0?j:"&nbsp;");if(j%3==0&&j<9)s+="<br>";else if(j%3!=0)s+="&nbsp;";}
-  n.innerHTML=s;
- }else n.innerHTML="";
-}
-function conflictsFor(i){
- var val=getValue(i),out=[],j;
- if(!val)return out;
- for(j=0;j<81;j++)if(j!=i&&getValue(j)==val&&isPeer(i,j))out.push(j);
- return out;
-}
-function repaint(){
- var i,base,all={},arr,j;
- for(i=0;i<81;i++){arr=conflictsFor(i);if(arr.length){all[i]=1;for(j=0;j<arr.length;j++)all[arr[j]]=1;}}
- for(i=0;i<81;i++){
-  base=cells[i].getAttribute("data-given")=="1"?"cell given":"cell";
-  if(selected>=0&&i!=selected&&isPeer(i,selected))base+=" peer";
-  if(all[i])base+=" conflict";
-  if(i==selected)base+=" selected";
-  cells[i].className=base;
+ var b=cells[i],val=getValue(i),nts=getNotes(i),v=b.getElementsByClassName("value")[0],n=b.getElementsByClassName("notes")[0],sol=b.getElementsByClassName("solution")[0],s="",j,correct=data().solution.charAt(i);
+ v.innerHTML=val;n.innerHTML="";sol.innerHTML="";b.className=b.className.replace(/\swrong/g,"");
+ if(!val&&nts&&!showingSolution){for(j=1;j<=9;j++){s+=(nts.indexOf(String(j))>=0?j:"&nbsp;");if(j%3==0&&j<9)s+="<br>";else if(j%3!=0)s+="&nbsp;";}n.innerHTML=s;}
+ if(showingSolution&&b.getAttribute("data-given")!=="1"){
+  if(!val)sol.innerHTML=correct;
+  else if(val!==correct){sol.innerHTML=correct;b.className+=" wrong";}
  }
 }
-function selectCell(i){
- selected=i;repaint();
- if(cells[i].getAttribute("data-given")=="1")message.innerHTML="Número fijo.";
- else if(getValue(i))message.innerHTML="Casilla con número.";
- else if(getNotes(i))message.innerHTML="Casilla con notas.";
- else message.innerHTML="Casilla vacía.";
+function conflictsFor(i){var val=getValue(i),out=[],j;if(!val)return out;for(j=0;j<81;j++)if(j!=i&&getValue(j)==val&&isPeer(i,j))out.push(j);return out;}
+function repaint(){var i,base,all={},arr,j;for(i=0;i<81;i++){arr=conflictsFor(i);if(arr.length){all[i]=1;for(j=0;j<arr.length;j++)all[arr[j]]=1;}}for(i=0;i<81;i++){base=cells[i].getAttribute("data-given")==="1"?"cell given":"cell";if(selected>=0&&i!=selected&&isPeer(i,selected))base+=" peer";if(all[i])base+=" conflict";if(i==selected)base+=" selected";cells[i].className=base;renderCell(i);}}
+function save(){try{var s=[],i;for(i=0;i<81;i++)s.push({v:getValue(i),n:getNotes(i)});localStorage.setItem(SAVE_PREFIX+data().id,JSON.stringify(s));}catch(e){}}
+function load(){try{var raw=localStorage.getItem(SAVE_PREFIX+data().id),a,i;if(!raw)return;a=JSON.parse(raw);for(i=0;i<81&&i<a.length;i++)if(cells[i].getAttribute("data-given")!=="1"){cells[i].setAttribute("data-value",a[i].v||"");cells[i].setAttribute("data-notes",a[i].n||"");}}catch(e){}}
+function updateTop(){
+ document.getElementById("puzzleLabel").innerHTML=data().visible;
+ document.getElementById("difficultyBtn").innerHTML=(level===4?"Random":data().difficulty);
 }
-function save(){
- try{
-  var s=[],i;
-  for(i=0;i<81;i++)s.push({v:getValue(i),n:getNotes(i)});
-  localStorage.setItem(KEY,JSON.stringify(s));
- }catch(e){}
+function buildPuzzle(){
+ var p=data(),i,ch;if(solveTimer){clearTimeout(solveTimer);solveTimer=null;}selected=-1;notesMode=false;notesKey.className="key";solveArmed=false;showingSolution=false;solveBtn.innerHTML="Resolver";
+ for(i=0;i<81;i++){ch=p.puzzle.charAt(i);cells[i].setAttribute("data-given",ch!=="0"?"1":"0");cells[i].setAttribute("data-value",ch!=="0"?ch:"");cells[i].setAttribute("data-notes","");}
+ load();updateTop();repaint();makeSquare();
 }
-function load(){
- try{
-  var raw=localStorage.getItem(KEY),a,i;if(!raw)return;
-  a=JSON.parse(raw);
-  for(i=0;i<81&&i<a.length;i++)if(cells[i].getAttribute("data-given")!="1"){
-   cells[i].setAttribute("data-value",a[i].v||"");
-   cells[i].setAttribute("data-notes",a[i].n||"");
-   renderCell(i);
-  }
- }catch(e){}
-}
+function selectCell(i){cancelSolveConfirm();selected=i;repaint();}
 function setNumber(v){
- if(selected<0){message.innerHTML="Selecciona primero una casilla.";return}
- var c=cells[selected],nts,p,conf;
- if(c.getAttribute("data-given")=="1"){message.innerHTML="Ese número es fijo.";return}
+ cancelSolveConfirm();
+ if(selected<0||showingSolution)return;
+ var c=cells[selected],nts,p;
+ if(c.getAttribute("data-given")==="1")return;
  if(notesMode){
-  nts=getNotes(selected);p=nts.indexOf(v);
-  if(getValue(selected))c.setAttribute("data-value","");
-  if(p>=0)nts=nts.replace(v,"");else nts+=v;
-  nts=nts.split("").sort().join("");
-  c.setAttribute("data-notes",nts);renderCell(selected);save();repaint();
-  message.innerHTML=nts?"Nota actualizada.":"Sin notas.";
-  return;
+  nts=getNotes(selected);p=nts.indexOf(v);if(getValue(selected))c.setAttribute("data-value","");if(p>=0)nts=nts.replace(v,"");else nts+=v;nts=nts.split("").sort().join("");c.setAttribute("data-notes",nts);
+ }else{
+  c.setAttribute("data-notes","");if(getValue(selected)===v)c.setAttribute("data-value","");else c.setAttribute("data-value",v);
  }
- c.setAttribute("data-notes","");
- c.setAttribute("data-value",v);renderCell(selected);save();repaint();
- conf=conflictsFor(selected);
- message.innerHTML=conf.length?"Aviso: número repetido en fila, columna o bloque.":"Número introducido.";
+ save();repaint();
 }
-function erase(){
- if(selected<0){message.innerHTML="Selecciona primero una casilla.";return}
- if(cells[selected].getAttribute("data-given")=="1"){message.innerHTML="Ese número es fijo.";return}
- cells[selected].setAttribute("data-value","");
- cells[selected].setAttribute("data-notes","");
- renderCell(selected);save();repaint();message.innerHTML="Casilla borrada.";
-}
-function reset(){
- var i;
- for(i=0;i<81;i++)if(cells[i].getAttribute("data-given")!="1"){
-  cells[i].setAttribute("data-value","");
-  cells[i].setAttribute("data-notes","");
-  renderCell(i);
+function randomPick(){
+ var lv=1+Math.floor(Math.random()*3),idx=Math.floor(Math.random()*puzzleSets[lv].length);
+ if(level===4){
+  var cur=document.getElementById("puzzleLabel").innerHTML+"|"+document.getElementById("difficultyBtn").getAttribute("data-real");
+  var tries=0;
+  while((puzzleSets[lv][idx].visible+"|"+lv)===cur&&tries<10){lv=1+Math.floor(Math.random()*3);idx=Math.floor(Math.random()*puzzleSets[lv].length);tries++;}
  }
- selected=-1;save();repaint();message.innerHTML="Partida reiniciada.";
+ level=4;
+ document.getElementById("difficultyBtn").setAttribute("data-real",lv);
+ index=idx;
+ buildPuzzle();
 }
-for(var r=0;r<9;r++){
- var tr=document.createElement("tr");
- for(var c=0;c<9;c++){
-  var i=r*9+c,td=document.createElement("td"),b=document.createElement("button"),v=document.createElement("span"),n=document.createElement("span"),ch=puzzle.charAt(i);
-  b.type="button";b.className="cell";b.setAttribute("data-given",ch!="0"?"1":"0");b.setAttribute("data-value",ch!="0"?ch:"");b.setAttribute("data-notes","");
-  v.className="value";n.className="notes";b.appendChild(v);b.appendChild(n);td.appendChild(b);tr.appendChild(td);cells.push(b);renderCell(i);
-  (function(idx,btn){btn.onclick=function(){selectCell(idx)}})(i,b);
+function changePuzzle(step){
+ if(level===4){randomPick();return;}
+ var a=puzzleSets[level],ni=index+step;
+ if(ni<0||ni>=a.length)return;
+ index=ni;
+ buildPuzzle();
+}
+function cycleDifficulty(){
+ if(level===1){level=2;index=0;buildPuzzle();}
+ else if(level===2){level=3;index=0;buildPuzzle();}
+ else if(level===3){randomPick();}
+ else{level=1;index=0;buildPuzzle();}
+}
+function cancelSolveConfirm(){
+ if(solveTimer){clearTimeout(solveTimer);solveTimer=null;}
+ if(solveArmed&&!showingSolution){
+  solveArmed=false;
+  solveBtn.innerHTML="Resolver";
  }
- tb.appendChild(tr);
 }
-load();repaint();makeSquare();window.onresize=makeSquare;
-var keys=document.getElementsByClassName("key"),k;
-for(k=0;k<keys.length;k++)keys[k].onclick=function(){setNumber(this.getAttribute("data-v"))};
-document.getElementById("eraseBtn").onclick=erase;
-notesBtn.onclick=function(){notesMode=!notesMode;notesBtn.innerHTML=notesMode?"Notas: SÍ":"Notas: NO";notesBtn.className=notesMode?"action on":"action";message.innerHTML=notesMode?"Modo notas activado.":"Modo notas desactivado."};
-document.getElementById("newBtn").onclick=reset;
+function armSolve(){
+ cancelSolveConfirm();
+ solveArmed=true;
+ solveBtn.innerHTML="¿Resolver?";
+ solveTimer=setTimeout(function(){
+  solveTimer=null;
+  if(solveArmed&&!showingSolution){
+   solveArmed=false;
+   solveBtn.innerHTML="Resolver";
+  }
+ },3000);
+}
+function revealSolution(){
+ if(solveTimer){clearTimeout(solveTimer);solveTimer=null;}
+ solveArmed=false;
+ showingSolution=true;
+ solveBtn.innerHTML="Solución";
+ repaint();
+ makeSquare();
+}
+function toggleSolve(){
+ if(showingSolution)return;
+ if(!solveArmed)armSolve();
+ else revealSolution();
+}
+for(var r=0;r<9;r++){var tr=document.createElement("tr");for(var c=0;c<9;c++){var i=r*9+c,td=document.createElement("td"),b=document.createElement("button"),v=document.createElement("span"),n=document.createElement("span"),s=document.createElement("span");b.type="button";b.className="cell";b.setAttribute("data-given","0");b.setAttribute("data-value","");b.setAttribute("data-notes","");v.className="value";n.className="notes";s.className="solution";b.appendChild(v);b.appendChild(n);b.appendChild(s);td.appendChild(b);tr.appendChild(td);cells.push(b);(function(idx,btn){btn.onclick=function(){selectCell(idx)}})(i,b);}tb.appendChild(tr);}
+var keys=document.getElementsByClassName("numberKey"),k;for(k=0;k<keys.length;k++)keys[k].onclick=function(){setNumber(this.getAttribute("data-v"));};
+notesKey.onclick=function(){cancelSolveConfirm();if(showingSolution)return;notesMode=!notesMode;notesKey.className=notesMode?"key on":"key";};
+document.getElementById("prevBtn").onclick=function(){cancelSolveConfirm();changePuzzle(-1)};
+document.getElementById("nextBtn").onclick=function(){cancelSolveConfirm();changePuzzle(1)};
+document.getElementById("difficultyBtn").onclick=function(){cancelSolveConfirm();cycleDifficulty();};
+solveBtn.onclick=toggleSolve;
+window.onresize=makeSquare;
+buildPuzzle();
 })();
 </script>
 </body>
