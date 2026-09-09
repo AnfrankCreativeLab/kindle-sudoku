@@ -9,14 +9,15 @@
 html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
 body{padding:4px 7px 6px;text-align:center}
 #app{width:100%;max-width:620px;margin:0 auto}
-#top{width:82%;height:34px;line-height:34px;margin:0 auto 4px;white-space:nowrap;text-align:center}
-#title{float:left;font-size:20px;font-weight:bold}
-.topbtn{height:30px;margin:1px 1px;padding:0 6px;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:13px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;-webkit-appearance:none;vertical-align:middle}
-#prevBtn,#nextBtn{width:34px;padding:0}
-#puzzleLabel{display:inline-block;min-width:34px;font-size:13px;font-weight:bold;vertical-align:middle}
-#difficultyBtn{min-width:54px}
-#solveBtn{min-width:64px}
-#board{border-collapse:collapse;table-layout:fixed;width:82%;border:3px solid #000;margin:0 auto 5px}
+#top{width:94%;height:40px;line-height:40px;margin:0 auto 5px;white-space:nowrap;text-align:center}
+#title{float:left;font-size:22px;font-weight:bold}
+.topbtn{height:34px;margin:2px 1px;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:14px;font-weight:bold;font-family:Arial,Helvetica,sans-serif;-webkit-appearance:none;vertical-align:middle}
+#prevBtn,#nextBtn{width:38px;padding:0}
+#puzzleLabel{display:inline-block;width:34px;font-size:14px;font-weight:bold;vertical-align:middle}
+#difficultyBtn{width:68px}
+#notesTopBtn{width:42px}
+#solveBtn{width:78px}
+#board{border-collapse:collapse;table-layout:fixed;width:94%;border:3px solid #000;margin:0 auto 6px}
 #board td{border:1px solid #777;padding:0;width:11.11%;position:relative}
 #board tr:nth-child(3) td,#board tr:nth-child(6) td{border-bottom:3px solid #000}
 #board td:nth-child(3),#board td:nth-child(6){border-right:3px solid #000}
@@ -26,13 +27,13 @@ body{padding:4px 7px 6px;text-align:center}
 .cell.selected{background:#cfcfcf!important}
 .cell.conflict{background:#b9b9b9!important}
 .value{position:absolute;left:0;top:0;width:100%;height:100%;display:block;text-align:center;font-size:24px}
-.given .value{font-weight:bold}
-.notes{position:absolute;left:2px;right:2px;top:2px;bottom:2px;font-size:10px;line-height:1.05;text-align:left;white-space:normal;overflow:hidden;letter-spacing:.5px}
-.solution{position:absolute;right:3px;bottom:2px;font-size:11px;line-height:11px;font-weight:bold}
+.given .value{font-weight:900}
+.notes{position:absolute;left:3px;right:3px;top:2px;bottom:2px;font-size:13px;font-weight:bold;line-height:1.05;text-align:left;white-space:normal;overflow:hidden;letter-spacing:.8px}
+.solution{position:absolute;right:3px;bottom:2px;font-size:14px;line-height:14px;font-weight:bold}
 .wrong .value{text-decoration:underline}
-#keys{width:82%;white-space:nowrap;margin:0 auto;text-align:center}
-.key{display:inline-block;width:9.2%;height:40px;margin:0 .2%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:18px;font-weight:bold;-webkit-appearance:none}
-#notesKey.on{background:#000!important;color:#fff!important}
+#keys{width:94%;white-space:nowrap;margin:0 auto;text-align:center}
+.key{display:inline-block;width:10.6%;height:44px;margin:0 .2%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:19px;font-weight:bold;-webkit-appearance:none}
+#notesTopBtn.on{background:#000!important;color:#fff!important}
 </style>
 </head>
 <body>
@@ -43,16 +44,17 @@ body{padding:4px 7px 6px;text-align:center}
  <span id="puzzleLabel">11</span>
  <button id="nextBtn" class="topbtn" type="button">&#9654;</button>
  <button id="difficultyBtn" class="topbtn" type="button">Fácil</button>
+ <button id="notesTopBtn" class="topbtn" type="button">N</button>
  <button id="solveBtn" class="topbtn" type="button">Resolver</button>
 </div>
 <table id="board"><tbody></tbody></table>
 <div id="keys">
- <button id="notesKey" class="key" type="button">N</button><button class="key numberKey" data-v="1" type="button">1</button><button class="key numberKey" data-v="2" type="button">2</button><button class="key numberKey" data-v="3" type="button">3</button><button class="key numberKey" data-v="4" type="button">4</button><button class="key numberKey" data-v="5" type="button">5</button><button class="key numberKey" data-v="6" type="button">6</button><button class="key numberKey" data-v="7" type="button">7</button><button class="key numberKey" data-v="8" type="button">8</button><button class="key numberKey" data-v="9" type="button">9</button>
+ <button class="key numberKey" data-v="1" type="button">1</button><button class="key numberKey" data-v="2" type="button">2</button><button class="key numberKey" data-v="3" type="button">3</button><button class="key numberKey" data-v="4" type="button">4</button><button class="key numberKey" data-v="5" type="button">5</button><button class="key numberKey" data-v="6" type="button">6</button><button class="key numberKey" data-v="7" type="button">7</button><button class="key numberKey" data-v="8" type="button">8</button><button class="key numberKey" data-v="9" type="button">9</button>
 </div>
 </div>
 <script>
 (function(){
-/* Kindle Sudoku v7: 81 puzzles visibles por dificultad, 11-99 sin ceros */
+/* Kindle Sudoku v9: layout Kindle optimizado, controles fijos y notas grandes */
 var SAVE_PREFIX="kindleSudokuState_";
 var baseSets={
  1:{name:"Fácil",puzzle:"530070000600195000098000060800060003400803001700020006060000280000419005000080079",solution:"534678912672195348198342567859761423426853791713924856961537284287419635345286179"},
@@ -109,7 +111,7 @@ for(lv=1;lv<=3;lv++){
 }
 var level=1,index=0,selected=-1,notesMode=false,solveArmed=false,showingSolution=false,solveTimer=null;
 var board=document.getElementById("board"),tb=board.getElementsByTagName("tbody")[0],cells=[];
-var notesKey=document.getElementById("notesKey"),solveBtn=document.getElementById("solveBtn");
+var notesTopBtn=document.getElementById("notesTopBtn"),solveBtn=document.getElementById("solveBtn");
 function data(){
  if(level===4){
   var real=parseInt(document.getElementById("difficultyBtn").getAttribute("data-real")||"1",10);
@@ -124,9 +126,10 @@ function makeSquare(){
   for(c=0;c<9;c++){
    rows[r].cells[c].style.height=h+"px";b=rows[r].cells[c].getElementsByTagName("button")[0];b.style.height=h+"px";
    v=b.getElementsByClassName("value")[0];n=b.getElementsByClassName("notes")[0];s=b.getElementsByClassName("solution")[0];
-   if(v){v.style.lineHeight=h+"px";v.style.fontSize=Math.max(20,Math.floor(h*.38))+"px";}
-   if(n)n.style.fontSize=Math.max(8,Math.floor(h*.15))+"px";
-   if(s)s.style.fontSize=Math.max(9,Math.floor(h*.16))+"px";
+   if(v){v.style.lineHeight=h+"px";v.style.fontSize=Math.max(22,Math.floor(h*.42))+"px";}
+   if(b.getAttribute("data-given")==="1"&&v){v.style.fontSize=Math.max(25,Math.floor(h*.48))+"px";v.style.fontWeight="900";}
+   if(n)n.style.fontSize=Math.max(11,Math.floor(h*.21))+"px";
+   if(s)s.style.fontSize=Math.max(12,Math.floor(h*.20))+"px";
   }
  }
 }
@@ -151,7 +154,7 @@ function updateTop(){
  document.getElementById("difficultyBtn").innerHTML=(level===4?"Random":data().difficulty);
 }
 function buildPuzzle(){
- var p=data(),i,ch;if(solveTimer){clearTimeout(solveTimer);solveTimer=null;}selected=-1;notesMode=false;notesKey.className="key";solveArmed=false;showingSolution=false;solveBtn.innerHTML="Resolver";
+ var p=data(),i,ch;if(solveTimer){clearTimeout(solveTimer);solveTimer=null;}selected=-1;notesMode=false;notesTopBtn.className="topbtn";solveArmed=false;showingSolution=false;solveBtn.innerHTML="Resolver";
  for(i=0;i<81;i++){ch=p.puzzle.charAt(i);cells[i].setAttribute("data-given",ch!=="0"?"1":"0");cells[i].setAttribute("data-value",ch!=="0"?ch:"");cells[i].setAttribute("data-notes","");}
  load();updateTop();repaint();makeSquare();
 }
@@ -227,7 +230,7 @@ function toggleSolve(){
 }
 for(var r=0;r<9;r++){var tr=document.createElement("tr");for(var c=0;c<9;c++){var i=r*9+c,td=document.createElement("td"),b=document.createElement("button"),v=document.createElement("span"),n=document.createElement("span"),s=document.createElement("span");b.type="button";b.className="cell";b.setAttribute("data-given","0");b.setAttribute("data-value","");b.setAttribute("data-notes","");v.className="value";n.className="notes";s.className="solution";b.appendChild(v);b.appendChild(n);b.appendChild(s);td.appendChild(b);tr.appendChild(td);cells.push(b);(function(idx,btn){btn.onclick=function(){selectCell(idx)}})(i,b);}tb.appendChild(tr);}
 var keys=document.getElementsByClassName("numberKey"),k;for(k=0;k<keys.length;k++)keys[k].onclick=function(){setNumber(this.getAttribute("data-v"));};
-notesKey.onclick=function(){cancelSolveConfirm();if(showingSolution)return;notesMode=!notesMode;notesKey.className=notesMode?"key on":"key";};
+notesTopBtn.onclick=function(){cancelSolveConfirm();if(showingSolution)return;notesMode=!notesMode;notesTopBtn.className=notesMode?"topbtn on":"topbtn";};
 document.getElementById("prevBtn").onclick=function(){cancelSolveConfirm();changePuzzle(-1)};
 document.getElementById("nextBtn").onclick=function(){cancelSolveConfirm();changePuzzle(1)};
 document.getElementById("difficultyBtn").onclick=function(){cancelSolveConfirm();cycleDifficulty();};
