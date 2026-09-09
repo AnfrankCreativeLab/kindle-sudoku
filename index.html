@@ -1,15 +1,180 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Kindle Sudoku v3</title><style>
-*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}body{padding:4px 7px;text-align:center}#app{width:100%;max-width:600px;margin:auto}#top{height:30px;line-height:30px;text-align:left}#title{font-size:20px;font-weight:bold}#level{float:right;font-size:14px;font-weight:bold}#board{border-collapse:collapse;table-layout:fixed;width:100%;border:3px solid #000;margin:1px auto 4px}#board td{border:1px solid #777;padding:0;width:11.11%;height:44px}#board tr:nth-child(3) td,#board tr:nth-child(6) td{border-bottom:3px solid #000}#board td:nth-child(3),#board td:nth-child(6){border-right:3px solid #000}.cell{display:block;width:100%;height:44px;line-height:44px;margin:0;padding:0;border:0;border-radius:0;background:#fff;color:#000;font-size:22px;text-align:center;-webkit-appearance:none}.given{font-weight:bold}.peer{background:#eee}.selected{background:#ccc!important}#keys,#actions{width:100%;white-space:nowrap}.key{display:inline-block;width:9.7%;height:40px;margin:0 .35%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:18px;font-weight:bold;-webkit-appearance:none}.action{display:inline-block;height:39px;margin:3px .4% 0;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:14px;font-weight:bold;-webkit-appearance:none}#notes{width:28%}#erase{width:28%}#new{width:39%}#msg{height:18px;line-height:18px;font-size:12px;text-align:left;white-space:nowrap;overflow:hidden}.on{background:#000!important;color:#fff!important}
-</style></head><body><div id="app"><div id="top"><span id="title">SUDOKU</span><span id="level">Prueba v3</span></div><table id="board"><tbody></tbody></table><div id="keys"><button class="key" data-v="1">1</button><button class="key" data-v="2">2</button><button class="key" data-v="3">3</button><button class="key" data-v="4">4</button><button class="key" data-v="5">5</button><button class="key" data-v="6">6</button><button class="key" data-v="7">7</button><button class="key" data-v="8">8</button><button class="key" data-v="9">9</button></div><div id="actions"><button id="notes" class="action">Notas: NO</button><button id="erase" class="action">Borrar</button><button id="new" class="action">Nueva partida</button></div><div id="msg">Selecciona una casilla vacía.</div></div>
-<script>(function(){var KEY="kindleSudokuV3",p="530070000600195000098000060800060003400803001700020006060000280000419005000080079",tb=document.getElementById("board").getElementsByTagName("tbody")[0],cells=[],sel=-1,notes=false,msg=document.getElementById("msg"),nb=document.getElementById("notes");
-function peer(a,b){var ar=Math.floor(a/9),ac=a%9,br=Math.floor(b/9),bc=b%9;return ar==br||ac==bc||(Math.floor(ar/3)==Math.floor(br/3)&&Math.floor(ac/3)==Math.floor(bc/3))}
-function paint(){for(var i=0;i<81;i++){var c=cells[i].getAttribute("data-g")=="1"?"cell given":"cell";if(sel>=0&&i!=sel&&peer(i,sel))c+=" peer";if(i==sel)c+=" selected";cells[i].className=c}}
-function select(i){sel=i;paint();msg.innerHTML=cells[i].getAttribute("data-g")=="1"?"Número fijo.":"Casilla seleccionada."}
-function save(){try{var a=[];for(var i=0;i<81;i++)a.push(cells[i].getAttribute("data-g")=="1"?"":cells[i].innerHTML||"");localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
-function load(){try{var x=localStorage.getItem(KEY);if(!x)return;var a=JSON.parse(x);for(var i=0;i<81;i++)if(cells[i].getAttribute("data-g")!="1")cells[i].innerHTML=a[i]||""}catch(e){}}
-for(var r=0;r<9;r++){var tr=document.createElement("tr");for(var c=0;c<9;c++){var i=r*9+c,td=document.createElement("td"),b=document.createElement("button"),ch=p.charAt(i);b.className="cell";b.setAttribute("data-g",ch!="0"?"1":"0");b.innerHTML=ch!="0"?ch:"";(function(n,x){x.onclick=function(){select(n)}})(i,b);td.appendChild(b);tr.appendChild(td);cells.push(b)}tb.appendChild(tr)}
-load();paint();var ks=document.getElementsByClassName("key");for(var k=0;k<ks.length;k++)ks[k].onclick=function(){if(sel<0||cells[sel].getAttribute("data-g")=="1"){msg.innerHTML="Selecciona una casilla vacía.";return}if(notes){msg.innerHTML="Notas se implementarán después.";return}cells[sel].innerHTML=this.getAttribute("data-v");save();msg.innerHTML="Guardado."};
-document.getElementById("erase").onclick=function(){if(sel>=0&&cells[sel].getAttribute("data-g")!="1"){cells[sel].innerHTML="";save();msg.innerHTML="Borrado."}};
-nb.onclick=function(){notes=!notes;nb.innerHTML=notes?"Notas: SÍ":"Notas: NO";nb.className=notes?"action on":"action"};
-document.getElementById("new").onclick=function(){for(var i=0;i<81;i++)if(cells[i].getAttribute("data-g")!="1")cells[i].innerHTML="";save();sel=-1;paint();msg.innerHTML="Partida reiniciada."};
-})();</script></body></html>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Kindle Sudoku v4</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:4px 7px 6px;text-align:center}
+#app{width:100%;max-width:620px;margin:0 auto}
+#top{height:30px;line-height:30px;text-align:left;white-space:nowrap}
+#title{font-size:20px;font-weight:bold}
+#status{float:right;font-size:14px;font-weight:bold}
+#board{border-collapse:collapse;table-layout:fixed;width:100%;border:3px solid #000;margin:0 auto 5px}
+#board td{border:1px solid #777;padding:0;width:11.11%;position:relative}
+#board tr:nth-child(3) td,#board tr:nth-child(6) td{border-bottom:3px solid #000}
+#board td:nth-child(3),#board td:nth-child(6){border-right:3px solid #000}
+.cell{display:block;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:#fff;color:#000;text-align:center;-webkit-appearance:none;position:relative}
+.cell.given{font-weight:bold}
+.cell.peer{background:#efefef}
+.cell.selected{background:#cfcfcf!important}
+.cell.conflict{background:#b9b9b9!important}
+.value{position:absolute;left:0;top:0;width:100%;height:100%;display:block;text-align:center;font-size:24px}
+.given .value{font-weight:bold}
+.notes{position:absolute;left:2px;right:2px;top:2px;bottom:2px;font-size:10px;line-height:1.05;text-align:left;white-space:normal;overflow:hidden;letter-spacing:.5px}
+#keys,#actions{width:100%;white-space:nowrap}
+.key{display:inline-block;width:9.7%;height:40px;margin:0 .35%;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:18px;font-weight:bold;-webkit-appearance:none}
+.action{display:inline-block;height:39px;margin:3px .4% 0;padding:0;border:2px solid #000;border-radius:0;background:#fff;color:#000;font-size:14px;font-weight:bold;-webkit-appearance:none}
+#notesBtn{width:28%}#eraseBtn{width:28%}#newBtn{width:39%}
+#message{height:20px;line-height:20px;font-size:12px;text-align:left;overflow:hidden;white-space:nowrap}
+.on{background:#000!important;color:#fff!important}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="top"><span id="title">SUDOKU</span><span id="status">v4</span></div>
+<table id="board"><tbody></tbody></table>
+<div id="keys">
+<button class="key" data-v="1">1</button><button class="key" data-v="2">2</button><button class="key" data-v="3">3</button><button class="key" data-v="4">4</button><button class="key" data-v="5">5</button><button class="key" data-v="6">6</button><button class="key" data-v="7">7</button><button class="key" data-v="8">8</button><button class="key" data-v="9">9</button>
+</div>
+<div id="actions">
+<button id="notesBtn" class="action">Notas: NO</button><button id="eraseBtn" class="action">Borrar</button><button id="newBtn" class="action">Nueva partida</button>
+</div>
+<div id="message">Selecciona una casilla.</div>
+</div>
+<script>
+(function(){
+var KEY="kindleSudokuV4State";
+var puzzle="530070000600195000098000060800060003400803001700020006060000280000419005000080079";
+var tb=document.getElementById("board").getElementsByTagName("tbody")[0];
+var board=document.getElementById("board");
+var cells=[],selected=-1,notesMode=false;
+var message=document.getElementById("message"),notesBtn=document.getElementById("notesBtn");
+
+function makeSquare(){
+ var w=board.offsetWidth, h=Math.floor(w/9), rows=board.getElementsByTagName("tr"),r,c,b,v,n;
+ for(r=0;r<rows.length;r++){
+  rows[r].style.height=h+"px";
+  for(c=0;c<9;c++){
+   rows[r].cells[c].style.height=h+"px";
+   b=rows[r].cells[c].getElementsByTagName("button")[0];
+   b.style.height=h+"px";
+   v=b.getElementsByClassName("value")[0];
+   n=b.getElementsByClassName("notes")[0];
+   if(v){v.style.lineHeight=h+"px";v.style.fontSize=Math.max(20,Math.floor(h*.38))+"px";}
+   if(n){n.style.fontSize=Math.max(8,Math.floor(h*.15))+"px";}
+  }
+ }
+}
+function isPeer(a,b){
+ var ar=Math.floor(a/9),ac=a%9,br=Math.floor(b/9),bc=b%9;
+ return ar==br||ac==bc||(Math.floor(ar/3)==Math.floor(br/3)&&Math.floor(ac/3)==Math.floor(bc/3));
+}
+function getValue(i){return cells[i].getAttribute("data-value")||""}
+function getNotes(i){return cells[i].getAttribute("data-notes")||""}
+function renderCell(i){
+ var b=cells[i],val=getValue(i),nts=getNotes(i),v=b.getElementsByClassName("value")[0],n=b.getElementsByClassName("notes")[0],s="",j;
+ v.innerHTML=val;
+ if(!val&&nts){
+  for(j=1;j<=9;j++){s+=(nts.indexOf(String(j))>=0?j:"&nbsp;");if(j%3==0&&j<9)s+="<br>";else if(j%3!=0)s+="&nbsp;";}
+  n.innerHTML=s;
+ }else n.innerHTML="";
+}
+function conflictsFor(i){
+ var val=getValue(i),out=[],j;
+ if(!val)return out;
+ for(j=0;j<81;j++)if(j!=i&&getValue(j)==val&&isPeer(i,j))out.push(j);
+ return out;
+}
+function repaint(){
+ var i,base,all={},arr,j;
+ for(i=0;i<81;i++){arr=conflictsFor(i);if(arr.length){all[i]=1;for(j=0;j<arr.length;j++)all[arr[j]]=1;}}
+ for(i=0;i<81;i++){
+  base=cells[i].getAttribute("data-given")=="1"?"cell given":"cell";
+  if(selected>=0&&i!=selected&&isPeer(i,selected))base+=" peer";
+  if(all[i])base+=" conflict";
+  if(i==selected)base+=" selected";
+  cells[i].className=base;
+ }
+}
+function selectCell(i){
+ selected=i;repaint();
+ if(cells[i].getAttribute("data-given")=="1")message.innerHTML="Número fijo.";
+ else if(getValue(i))message.innerHTML="Casilla con número.";
+ else if(getNotes(i))message.innerHTML="Casilla con notas.";
+ else message.innerHTML="Casilla vacía.";
+}
+function save(){
+ try{
+  var s=[],i;
+  for(i=0;i<81;i++)s.push({v:getValue(i),n:getNotes(i)});
+  localStorage.setItem(KEY,JSON.stringify(s));
+ }catch(e){}
+}
+function load(){
+ try{
+  var raw=localStorage.getItem(KEY),a,i;if(!raw)return;
+  a=JSON.parse(raw);
+  for(i=0;i<81&&i<a.length;i++)if(cells[i].getAttribute("data-given")!="1"){
+   cells[i].setAttribute("data-value",a[i].v||"");
+   cells[i].setAttribute("data-notes",a[i].n||"");
+   renderCell(i);
+  }
+ }catch(e){}
+}
+function setNumber(v){
+ if(selected<0){message.innerHTML="Selecciona primero una casilla.";return}
+ var c=cells[selected],nts,p,conf;
+ if(c.getAttribute("data-given")=="1"){message.innerHTML="Ese número es fijo.";return}
+ if(notesMode){
+  nts=getNotes(selected);p=nts.indexOf(v);
+  if(getValue(selected))c.setAttribute("data-value","");
+  if(p>=0)nts=nts.replace(v,"");else nts+=v;
+  nts=nts.split("").sort().join("");
+  c.setAttribute("data-notes",nts);renderCell(selected);save();repaint();
+  message.innerHTML=nts?"Nota actualizada.":"Sin notas.";
+  return;
+ }
+ c.setAttribute("data-notes","");
+ c.setAttribute("data-value",v);renderCell(selected);save();repaint();
+ conf=conflictsFor(selected);
+ message.innerHTML=conf.length?"Aviso: número repetido en fila, columna o bloque.":"Número introducido.";
+}
+function erase(){
+ if(selected<0){message.innerHTML="Selecciona primero una casilla.";return}
+ if(cells[selected].getAttribute("data-given")=="1"){message.innerHTML="Ese número es fijo.";return}
+ cells[selected].setAttribute("data-value","");
+ cells[selected].setAttribute("data-notes","");
+ renderCell(selected);save();repaint();message.innerHTML="Casilla borrada.";
+}
+function reset(){
+ var i;
+ for(i=0;i<81;i++)if(cells[i].getAttribute("data-given")!="1"){
+  cells[i].setAttribute("data-value","");
+  cells[i].setAttribute("data-notes","");
+  renderCell(i);
+ }
+ selected=-1;save();repaint();message.innerHTML="Partida reiniciada.";
+}
+for(var r=0;r<9;r++){
+ var tr=document.createElement("tr");
+ for(var c=0;c<9;c++){
+  var i=r*9+c,td=document.createElement("td"),b=document.createElement("button"),v=document.createElement("span"),n=document.createElement("span"),ch=puzzle.charAt(i);
+  b.type="button";b.className="cell";b.setAttribute("data-given",ch!="0"?"1":"0");b.setAttribute("data-value",ch!="0"?ch:"");b.setAttribute("data-notes","");
+  v.className="value";n.className="notes";b.appendChild(v);b.appendChild(n);td.appendChild(b);tr.appendChild(td);cells.push(b);renderCell(i);
+  (function(idx,btn){btn.onclick=function(){selectCell(idx)}})(i,b);
+ }
+ tb.appendChild(tr);
+}
+load();repaint();makeSquare();window.onresize=makeSquare;
+var keys=document.getElementsByClassName("key"),k;
+for(k=0;k<keys.length;k++)keys[k].onclick=function(){setNumber(this.getAttribute("data-v"))};
+document.getElementById("eraseBtn").onclick=erase;
+notesBtn.onclick=function(){notesMode=!notesMode;notesBtn.innerHTML=notesMode?"Notas: SÍ":"Notas: NO";notesBtn.className=notesMode?"action on":"action";message.innerHTML=notesMode?"Modo notas activado.":"Modo notas desactivado."};
+document.getElementById("newBtn").onclick=reset;
+})();
+</script>
+</body>
+</html>
