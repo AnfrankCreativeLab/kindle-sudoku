@@ -1,20 +1,26 @@
-# Kindle Sokoban
+# Kindle Sudoku
 
-A free Sokoban puzzle game designed specifically for the Kindle Paperwhite.
+A free Sudoku puzzle game designed specifically for the Kindle Paperwhite.
 
-Move through the maze, push the boxes onto their target positions, and try to complete each puzzle using as few moves as possible.
+Solve Sudoku puzzles directly on your Kindle using a clean, touch-friendly interface designed for E-Ink screens.
 
-Kindle Sokoban is designed for comfortable play on an E-Ink screen, with a clean grayscale interface, large touch-friendly controls, and automatic pathfinding: simply tap an accessible square and the character will walk there using the shortest available route.
+Kindle Sudoku includes three difficulty levels, note-taking, automatic progress saving, error detection, a lives system, and hundreds of puzzles ready to play directly from the Kindle web browser.
 
 ## Features
 
 - Designed for Kindle Paperwhite
-- Touch-friendly interface
-- Automatic shortest-path movement
-- Move counter
-- Undo and Reset
-- Automatic game progress saving
-- Multiple puzzle levels
+- Clean grayscale interface optimized for E-Ink
+- Large touch-friendly controls
+- 3 difficulty levels: Easy, Medium and Hard
+- 243 Sudoku puzzles
+- Notes mode for possible numbers
+- Automatic error detection
+- Lives system
+- Automatic progress saving
+- Undo-free, simple number entry and removal
+- Reset puzzle option
+- Solve option to temporarily reveal the solution
+- Puzzle completion detection
 - No installation required
 - No ads
 - No registration
@@ -24,23 +30,29 @@ Developed with love by **Anfrank Ponce**.
 
 ---
 
-# Kindle Sokoban — Español
+# Kindle Sudoku — Español
 
-Un juego gratuito de Sokoban diseñado específicamente para Kindle Paperwhite.
+Un juego gratuito de Sudoku diseñado específicamente para Kindle Paperwhite.
 
-Recorre el laberinto, empuja las cajas hasta sus posiciones de destino e intenta completar cada puzzle utilizando el menor número posible de movimientos.
+Resuelve Sudokus directamente en tu Kindle mediante una interfaz limpia y táctil diseñada para pantallas de tinta electrónica.
 
-Kindle Sokoban está diseñado para jugar cómodamente en una pantalla de tinta electrónica, con una interfaz limpia en escala de grises, controles táctiles grandes y movimiento automático: simplemente toca una casilla accesible y el personaje caminará hasta ella utilizando la ruta disponible más corta.
+Kindle Sudoku incluye tres niveles de dificultad, anotaciones, guardado automático del progreso, detección de errores, un sistema de vidas y cientos de puzzles preparados para jugar directamente desde el navegador web del Kindle.
 
 ## Características
 
 - Diseñado para Kindle Paperwhite
-- Interfaz adaptada al control táctil
-- Movimiento automático por la ruta más corta
-- Contador de movimientos
-- Undo y Reset
+- Interfaz limpia en escala de grises optimizada para tinta electrónica
+- Controles táctiles grandes
+- 3 niveles de dificultad: Fácil, Medio y Difícil
+- 243 puzzles de Sudoku
+- Modo de notas para números posibles
+- Detección automática de errores
+- Sistema de vidas
 - Guardado automático del progreso
-- Múltiples niveles
+- Introducción y eliminación sencilla de números
+- Opción para reiniciar el puzzle
+- Opción Solve para mostrar temporalmente la solución
+- Detección automática al completar el Sudoku
 - No requiere instalación
 - Sin publicidad
 - Sin registro
