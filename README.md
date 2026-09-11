@@ -1,22 +1,49 @@
-# Kindle Sudoku — Compatibility Test
+# Kindle Sokoban
 
-Prueba mínima para comprobar el navegador del Kindle Paperwhite 12.
+A free Sokoban puzzle game designed specifically for the Kindle Paperwhite.
 
-## Qué comprueba
-- Ejecución de JavaScript.
-- Interacción táctil con un tablero 9×9.
-- Botones 1–9 y borrar.
-- Persistencia mediante localStorage.
-- Recuperación del tablero al volver a abrir la página.
+Move through the maze, push the boxes onto their target positions, and try to complete each puzzle using as few moves as possible.
 
-## Cómo probarlo
-1. Publica `index.html` en GitHub Pages.
-2. Abre la URL desde el navegador del Kindle.
-3. Comprueba que JavaScript y localStorage indiquen `OK`.
-4. Introduce varios números.
-5. Pulsa `Guardar`.
-6. Cierra completamente el navegador.
-7. Vuelve a abrir la página.
-8. Comprueba si los números siguen en el tablero.
+Kindle Sokoban is designed for comfortable play on an E-Ink screen, with a clean grayscale interface, large touch-friendly controls, and automatic pathfinding: simply tap an accessible square and the character will walk there using the shortest available route.
 
-Si esto funciona, el navegador tiene las capacidades básicas necesarias para desarrollar el Sudoku completo.
+## Features
+
+- Designed for Kindle Paperwhite
+- Touch-friendly interface
+- Automatic shortest-path movement
+- Move counter
+- Undo and Reset
+- Automatic game progress saving
+- Multiple puzzle levels
+- No installation required
+- No ads
+- No registration
+- Free to play
+
+Developed with love by **Anfrank Ponce**.
+
+---
+
+# Kindle Sokoban — Español
+
+Un juego gratuito de Sokoban diseñado específicamente para Kindle Paperwhite.
+
+Recorre el laberinto, empuja las cajas hasta sus posiciones de destino e intenta completar cada puzzle utilizando el menor número posible de movimientos.
+
+Kindle Sokoban está diseñado para jugar cómodamente en una pantalla de tinta electrónica, con una interfaz limpia en escala de grises, controles táctiles grandes y movimiento automático: simplemente toca una casilla accesible y el personaje caminará hasta ella utilizando la ruta disponible más corta.
+
+## Características
+
+- Diseñado para Kindle Paperwhite
+- Interfaz adaptada al control táctil
+- Movimiento automático por la ruta más corta
+- Contador de movimientos
+- Undo y Reset
+- Guardado automático del progreso
+- Múltiples niveles
+- No requiere instalación
+- Sin publicidad
+- Sin registro
+- Gratuito
+
+Desarrollado con cariño por **Anfrank Ponce**.
